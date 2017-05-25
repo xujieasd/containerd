@@ -68,6 +68,14 @@ type ExecExitTask struct {
 }
 
 func (s *Supervisor) execExit(t *ExecExitTask) error {
+
+	proc := t.Process
+	logrus.WithFields(logrus.Fields{
+		"pid":       proc.ID(),
+		"id":        proc.Container().ID(),
+		"systemPid": proc.SystemPid(),
+	}).Debug("containerd: ExecExitTask start")
+
 	container := t.Process.Container()
 	// exec process: we remove this process without notifying the main event loop
 	if err := container.RemoveProcess(t.PID); err != nil {

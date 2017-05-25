@@ -248,6 +248,12 @@ func (s *Supervisor) Unsubscribe(sub chan Event) {
 // notifySubscribers will send the provided event to the external subscribers
 // of the events channel
 func (s *Supervisor) notifySubscribers(e Event) {
+
+	logrus.WithFields(logrus.Fields{
+		"type":       e.Type,
+		"id"  :       e.ID,
+	}).Debug("containerd: notifySub start")
+
 	s.subscriberLock.RLock()
 	defer s.subscriberLock.RUnlock()
 	for sub := range s.subscribers {

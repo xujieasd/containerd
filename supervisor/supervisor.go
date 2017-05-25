@@ -302,6 +302,12 @@ func (s *Supervisor) SendTask(evt Task) {
 
 func (s *Supervisor) exitHandler() {
 	for p := range s.monitor.Exits() {
+
+		logrus.WithFields(logrus.Fields{
+			"run time":    time.Now(),
+
+		}).Debug("containerd: exitHandler")
+
 		e := &ExitTask{
 			Process: p,
 		}

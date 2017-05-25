@@ -90,8 +90,18 @@ func (m *Monitor) Close() error {
 func (m *Monitor) processEvent(fd int, event uint32) {
 	m.m.Lock()
 	r := m.receivers[fd]
+
+	logrus.WithFields(logrus.Fields{
+		"run_time_type":       r,
+		"event":               event,
+	}).Debug("containerd: monitor: process event")
+
 	switch t := r.(type) {
 	case runtime.Process:
+		logrus.WithFields(logrus.Fields{
+			"run_time_type":       "runtime.Process",
+		}).Debug("containerd: monitor: runtime.Process")
+		
 		if event == syscall.EPOLLHUP {
 			delete(m.receivers, fd)
 			if err := syscall.EpollCtl(m.epollFd, syscall.EPOLL_CTL_DEL, fd, &syscall.EpollEvent{

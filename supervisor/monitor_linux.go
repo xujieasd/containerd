@@ -101,7 +101,7 @@ func (m *Monitor) processEvent(fd int, event uint32) {
 		logrus.WithFields(logrus.Fields{
 			"run_time_type":       "runtime.Process",
 		}).Debug("containerd: monitor: runtime.Process")
-		
+
 		if event == syscall.EPOLLHUP {
 			delete(m.receivers, fd)
 			if err := syscall.EpollCtl(m.epollFd, syscall.EPOLL_CTL_DEL, fd, &syscall.EpollEvent{

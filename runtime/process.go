@@ -237,6 +237,11 @@ func (p *process) updateExitStatusFile(status uint32) (uint32, error) {
 }
 
 func (p *process) handleSigkilledShim(rst uint32, rerr error) (uint32, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"rst":       rst,
+	}).Debug("containerd: runtime: handleSigkilledShim")
+
 	if p.cmd == nil || p.cmd.Process == nil {
 		e := unix.Kill(p.pid, 0)
 		if e == syscall.ESRCH {
@@ -307,7 +312,17 @@ func (p *process) handleSigkilledShim(rst uint32, rerr error) (uint32, error) {
 }
 
 func (p *process) ExitStatus() (rst uint32, rerr error) {
+
+	logrus.WithFields(logrus.Fields{
+		"rst":       rst,
+	}).Debug("containerd: runtime: ExitStatus")
+
 	data, err := ioutil.ReadFile(filepath.Join(p.root, ExitStatusFile))
+
+	logrus.WithFields(logrus.Fields{
+		"data":       data,
+	}).Debug("containerd: runtime: ExitStatus")
+
 	defer func() {
 		if rerr != nil {
 			rst, rerr = p.handleSigkilledShim(rst, rerr)
@@ -396,6 +411,11 @@ func (p *process) isSameProcess() (bool, error) {
 // Wait will reap the shim process
 func (p *process) Wait() {
 	if p.cmdDoneCh != nil {
+
+		logrus.WithFields(logrus.Fields{
+			"Wait":       "Wait",
+		}).Debug("containerd: runtime: Wait")
+
 		<-p.cmdDoneCh
 	}
 }

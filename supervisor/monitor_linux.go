@@ -151,6 +151,11 @@ func (m *Monitor) start() {
 		}
 		// process events
 		for i := 0; i < n; i++ {
+
+			logrus.WithFields(logrus.Fields{
+				"n":       n,
+			}).Debug("containerd: monitor: poll got event")
+
 			m.processEvent(int(events[i].Fd), events[i].Events)
 		}
 	}

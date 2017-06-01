@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/docker/containerd/specs"
+	"src/github.com/Sirupsen/logrus"
 )
 
 var errRuntime = errors.New("shim: runtime execution error")
@@ -68,6 +69,13 @@ type process struct {
 }
 
 func newProcess(id, bundle, runtimeName string) (*process, error) {
+
+	logrus.WithFields(logrus.Fields{
+		"id":           id,
+		"budle":        bundle,
+		"runtimeName":  runtimeName,
+	}).Debug("containerd-shim: newProcess: ")
+
 	p := &process{
 		id:      id,
 		bundle:  bundle,
@@ -172,6 +180,11 @@ func (p *process) create() error {
 		"--pid-file", filepath.Join(cwd, "pid"),
 		p.id,
 	)
+
+	logrus.WithFields(logrus.Fields{
+		"args":       args,
+	}).Debug("containerd-shim: command: ")
+
 	cmd := exec.Command(p.runtime, args...)
 	cmd.Dir = p.bundle
 	cmd.Stdin = p.stdio.stdin

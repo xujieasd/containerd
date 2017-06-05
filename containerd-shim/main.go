@@ -110,11 +110,15 @@ func start(log *os.File) error {
 		case s := <-signals:
 			switch s {
 			case syscall.SIGCHLD:
+
+				writeMessage(log, "sigchld", err)
+
 				exits, _ := osutils.Reap(false)
 				for _, e := range exits {
 					// check to see if runtime is one of the processes that has exited
 					if e.Pid == p.pid() {
 						exitShim = true
+						writeMessage(log, "exitshim true", err)
 						writeInt("exitStatus", e.Status)
 					}
 				}
@@ -124,8 +128,10 @@ func start(log *os.File) error {
 				// kill all processes in the container incase it was not running in
 				// its own PID namespace
 				p.killAll()
+				writeMessage(log, "killALL done", err)
 				// wait for all the processes and IO to finish
 				p.Wait()
+				writeMessage(log, "wait done", err)
 				// delete the container from the runtime
 				p.delete()
 				// the close of the exit fifo will happen when the shim exits
